@@ -111,7 +111,7 @@ resource "google_compute_instance" "controller" {
 
     boot_disk {
         initialize_params {
-            image = "ubuntu-2004"
+            image = "ubuntu-2004-lts"
         }
     }
 
@@ -145,7 +145,7 @@ resource "google_compute_instance" "worker" {
 
     boot_disk {
         initialize_params {
-            image = "ubuntu-2004"
+            image = "ubuntu-2004-lts"
         }
     }
 
