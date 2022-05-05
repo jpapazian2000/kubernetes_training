@@ -107,7 +107,7 @@ resource "google_compute_instance" "controller" {
     name = "${var.prefix}-controller-${count.index + 1}"
     zone = "${var.region}-a"
     machine_type = var.machine_type
-    hostname = "controller-${count.index +1}"
+    #hostname = "controller-${count.index +1}"
 
     boot_disk {
         initialize_params {
@@ -141,7 +141,7 @@ resource "google_compute_instance" "worker" {
     name = "${var.prefix}-worker-${count.index + 1}"
     zone = "${var.region}-a"
     machine_type = var.machine_type
-    hostname = "worker-${count.index +1}"
+    #hostname = "worker-${count.index +1}"
 
     boot_disk {
         initialize_params {
