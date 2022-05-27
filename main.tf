@@ -34,7 +34,7 @@ resource "google_compute_firewall" "ssh_access" {
     ports = ["22"]
   }
 
-  source_ranges = ["86.195.92.18/32"]
+  source_ranges = [var.allowed_ip]
   source_tags = ["ssh-access"]
 }
 
@@ -47,7 +47,7 @@ resource "google_compute_firewall" "https_access" {
     ports = ["443"]
   }
 
-  source_ranges = ["86.195.92.18/32"]
+  source_ranges = [var.allowed_ip]
   source_tags = ["https-access"]
 }
 
@@ -60,7 +60,7 @@ resource "google_compute_firewall" "controller_access" {
     ports = ["2379", "2380", "10250", "10259", "10257", "6443"]
   }
 
-  source_ranges = ["86.195.92.18/32"]
+  source_ranges = [var.allowed_ip]
   source_tags = ["controller-access"]
 }
 
@@ -85,7 +85,7 @@ resource "google_compute_firewall" "ext-worker_access" {
     ports = ["30000-32767"]
   }
 
-  source_ranges = ["86.195.92.18/32"]
+  source_ranges = [var.allowed_ip]
   source_tags = ["worker-access"]
 }
 
@@ -98,7 +98,7 @@ resource "google_compute_firewall" "api-serverr_access" {
     ports = ["6443"]
   }
 
-  source_ranges = ["86.195.92.18/32"]
+  source_ranges = [var.allowed_ip]
   source_tags = ["api-server-access"]
 }
 

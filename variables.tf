@@ -24,3 +24,4 @@ variable "ssh_keys" {}
 variable "ssh_user" {
     default = "jerome"
 }
+variable "allowed_ip" {}
