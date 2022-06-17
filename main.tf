@@ -104,7 +104,8 @@ resource "google_compute_firewall" "api-serverr_access" {
 
 resource "google_compute_instance" "controller" {
     count = 1
-    name = "${var.prefix}-controller-${count.index + 1}"
+    #name = "${var.prefix}-controller-${count.index + 1}"
+    name = "cp"
     zone = "${var.region}-a"
     machine_type = var.machine_type
     #hostname = "controller-${count.index +1}"
@@ -138,7 +139,8 @@ resource "google_compute_instance" "controller" {
 
 resource "google_compute_instance" "worker" {
     count = 1
-    name = "${var.prefix}-worker-${count.index + 1}"
+    #name = "${var.prefix}-worker-${count.index + 1}"
+    bame ="worker"
     zone = "${var.region}-a"
     machine_type = var.machine_type
     #hostname = "worker-${count.index +1}"
