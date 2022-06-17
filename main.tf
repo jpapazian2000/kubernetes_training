@@ -140,7 +140,7 @@ resource "google_compute_instance" "controller" {
 resource "google_compute_instance" "worker" {
     count = 1
     #name = "${var.prefix}-worker-${count.index + 1}"
-    bame ="worker"
+    name ="worker"
     zone = "${var.region}-a"
     machine_type = var.machine_type
     #hostname = "worker-${count.index +1}"
