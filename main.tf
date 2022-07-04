@@ -38,69 +38,69 @@ resource "google_compute_firewall" "ssh_access" {
   source_tags = ["ssh-access"]
 }
 
-resource "google_compute_firewall" "https_access" {
-  name = "${var.prefix}-allow-https"
-  network = google_compute_network.vpc_network.self_link
-
-  allow {
-    protocol = "tcp"
-    ports = ["443"]
-  }
-
-  source_ranges = [var.allowed_ip]
-  source_tags = ["https-access"]
-}
-
-resource "google_compute_firewall" "controller_access" {
-  name = "${var.prefix}-allow-controller"
-  network = google_compute_network.vpc_network.self_link
-
-  allow {
-    protocol = "tcp"
-    ports = ["2379", "2380", "10250", "10259", "10257", "6443"]
-  }
-
-  source_ranges = [var.allowed_ip]
-  source_tags = ["controller-access"]
-}
-
-resource "google_compute_firewall" "worker_access" {
-  name = "${var.prefix}-allow-worker"
-  network = google_compute_network.vpc_network.self_link
-
-  allow {
-    protocol = "tcp"
-    ports = ["10250"]
-  }
-
-  source_tags = ["worker-access"]
-}
-
-resource "google_compute_firewall" "ext-worker_access" {
-  name = "${var.prefix}-allow-ext-worker"
-  network = google_compute_network.vpc_network.self_link
-
-  allow {
-    protocol = "tcp"
-    ports = ["30000-32767"]
-  }
-
-  source_ranges = [var.allowed_ip]
-  source_tags = ["worker-access"]
-}
-
-resource "google_compute_firewall" "api-serverr_access" {
-  name = "${var.prefix}-allow-api-server"
-  network = google_compute_network.vpc_network.self_link
-
-  allow {
-    protocol = "tcp"
-    ports = ["6443"]
-  }
-
-  source_ranges = [var.allowed_ip]
-  source_tags = ["api-server-access"]
-}
+#resource "google_compute_firewall" "https_access" {
+#  name = "${var.prefix}-allow-https"
+#  network = google_compute_network.vpc_network.self_link
+#
+#  allow {
+#    protocol = "tcp"
+#    ports = ["443"]
+#  }
+#
+#  source_ranges = [var.allowed_ip]
+#  source_tags = ["https-access"]
+#}
+#
+#resource "google_compute_firewall" "controller_access" {
+#  name = "${var.prefix}-allow-controller"
+#  network = google_compute_network.vpc_network.self_link
+#
+#  allow {
+#    protocol = "tcp"
+#    ports = ["2379", "2380", "10250", "10259", "10257", "6443"]
+#  }
+#
+#  source_ranges = [var.allowed_ip]
+#  source_tags = ["controller-access"]
+#}
+#
+#resource "google_compute_firewall" "worker_access" {
+#  name = "${var.prefix}-allow-worker"
+#  network = google_compute_network.vpc_network.self_link
+#
+#  allow {
+#    protocol = "tcp"
+#    ports = ["10250"]
+#  }
+#
+#  source_tags = ["worker-access"]
+#}
+#
+#resource "google_compute_firewall" "ext-worker_access" {
+#  name = "${var.prefix}-allow-ext-worker"
+#  network = google_compute_network.vpc_network.self_link
+#
+#  allow {
+#    protocol = "tcp"
+#    ports = ["30000-32767"]
+#  }
+#
+#  source_ranges = [var.allowed_ip]
+#  source_tags = ["worker-access"]
+#}
+#
+#resource "google_compute_firewall" "api-serverr_access" {
+#  name = "${var.prefix}-allow-api-server"
+#  network = google_compute_network.vpc_network.self_link
+#
+#  allow {
+#    protocol = "tcp"
+#    ports = ["6443"]
+#  }
+#
+#  source_ranges = [var.allowed_ip]
+#  source_tags = ["api-server-access"]
+#}
 
 resource "google_compute_instance" "controller" {
     count = 1
@@ -130,7 +130,9 @@ resource "google_compute_instance" "controller" {
         access_config {
         }
     }
-    tags = ["worker-access", "https-access", "ssh-access", "api-server-access"]
+    #tags = ["worker-access", "https-access", "ssh-access", "api-server-access"]
+    tags = ["ssh-access"]
+
 
     metadata = {
         sshKeys = "${var.ssh_user}:${var.ssh_keys}"
@@ -165,7 +167,8 @@ resource "google_compute_instance" "worker" {
         access_config {
         }
     }
-    tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
+    #tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
+    tags = ["ssh-access"]
 
     metadata = {
         sshKeys = "${var.ssh_user}:${var.ssh_keys}"
