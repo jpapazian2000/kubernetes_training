@@ -1,10 +1,10 @@
-variable "project" { }
+variable "google_project" { }
 
-variable "region" {
+variable "google_region" {
   default = "europe-west3"
 }
 
-variable "zone" {
+variable "google_zone" {
     default = "europe-west3-c"
 }
 variable "owner" { }

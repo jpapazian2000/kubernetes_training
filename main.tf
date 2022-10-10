@@ -8,9 +8,9 @@ terraform {
 }
 
 provider "google" {
-  project = var.project
-  region = var.region
-  zone = var.zone
+  project = var.google_project
+  region = var.google_region
+  zone = var.google_zone
 }
 
 resource "google_compute_network" "vpc_network" {
@@ -20,7 +20,7 @@ resource "google_compute_network" "vpc_network" {
 
 resource "google_compute_subnetwork" "vpc_subnetwork" {
     name = "${var.prefix}-subnet"
-    region = var.region
+    region = var.google_region
     network = google_compute_network.vpc_network.self_link
     ip_cidr_range = var.subnet_prefix
 }
