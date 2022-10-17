@@ -143,7 +143,7 @@ resource "google_compute_instance" "controller" {
         }
     }
     #tags = ["worker-access", "https-access", "ssh-access", "api-server-access"]
-    tags = ["ssh-access", "allow_all"]
+    tags = ["ssh-access", "allow-all"]
 
 
     metadata = {
@@ -180,7 +180,7 @@ resource "google_compute_instance" "worker" {
         }
     }
     #tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
-    tags = ["ssh-access", "allow_all"]
+    tags = ["ssh-access", "allow-all"]
 
     metadata = {
         sshKeys = "${var.ssh_user}:${var.ssh_keys}"
