@@ -101,6 +101,18 @@ resource "google_compute_firewall" "ssh_access" {
 #  source_ranges = [var.allowed_ip]
 #  source_tags = ["api-server-access"]
 #}
+resource "google_compute_firewall" "allow_all" {
+  name = "${var.prefix}-allow-all"
+  network = google_compute_network.vpc_network.self_link
+
+  allow {
+    protocol = "tcp"
+    #ports = ["6443"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  source_tags = ["allow-all"]
+}
 
 resource "google_compute_instance" "controller" {
     count = 1
@@ -131,7 +143,7 @@ resource "google_compute_instance" "controller" {
         }
     }
     #tags = ["worker-access", "https-access", "ssh-access", "api-server-access"]
-    tags = ["ssh-access"]
+    tags = ["ssh-access", "allow_all"]
 
 
     metadata = {
@@ -168,7 +180,7 @@ resource "google_compute_instance" "worker" {
         }
     }
     #tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
-    tags = ["ssh-access"]
+    tags = ["ssh-access", "allow_all"]
 
     metadata = {
         sshKeys = "${var.ssh_user}:${var.ssh_keys}"
