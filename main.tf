@@ -17,7 +17,7 @@ resource "tls_private_key" "controller_priv_key" {
   rsa_bits = 4096
 }
 data "hcp_packer_iteration" "gold" {
-    bucket_name = "k8s_controller_images"
+    bucket_name = "k8s-controller-images"
     channel = "prod"
 }
 data "hcp_packer_image" "controller" {
