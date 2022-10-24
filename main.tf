@@ -4,6 +4,10 @@ terraform {
           source = "hashicorp/google"
           version = "~>3.5"
       }
+      hcp = {
+      source  = "hashicorp/hcp"
+      version = "0.43.0"
+      }
     }
 }
 
@@ -12,6 +16,9 @@ provider "google" {
   region = var.google_region
   zone = var.google_zone
 }
+provider "hcp" {
+}
+
 resource "tls_private_key" "controller_priv_key" {
   algorithm = "RSA"
   rsa_bits = 4096
