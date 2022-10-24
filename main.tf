@@ -21,7 +21,7 @@ data "hcp_packer_iteration" "gold" {
     channel = "prod"
 }
 data "hcp_packer_image" "controller" {
-    bucket_name = "k8s_controller_images"
+    bucket_name = "k8s-controller-images"
     iteration_id = data.hcp_packer_iteration.gold.id
     cloud_provider = "gcp"
     region = "europe-west9"
