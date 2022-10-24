@@ -31,7 +31,7 @@ data "hcp_packer_image" "controller" {
     bucket_name = "k8s-controller-images"
     iteration_id = data.hcp_packer_iteration.gold.id
     cloud_provider = "gcp"
-    region = var.region
+    region = var.google_region
 }
 
 data "tls_public_key" "controller" {
