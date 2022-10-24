@@ -175,12 +175,12 @@ resource "google_compute_instance" "controller" {
     connection {
         type = "ssh"
         user = var.ssh_user
-        host = self.public_ip
+        host = google_compute_subnetwork.vpc_subnetwork.self_link
         timeout = "300s"
         private_key = local.privkey
     }
 
-    provisionner "file" {
+    provisioner "file" {
         source = "script.sh"
         destination = "/tmp/script.sh"
     }
