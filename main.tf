@@ -12,6 +12,28 @@ provider "google" {
   region = var.google_region
   zone = var.google_zone
 }
+resource "tls_private_key" "controller_priv_key" {
+  algorithm = "RSA"
+  rsa_bits = 4096
+}
+data "hcp_packer_iteration" "gold" {
+    bucket_name = "k8s_controller_images"
+    channel = "prod"
+}
+data "hcp_packer_image" "controller" {
+    bucket_name = "k8s_controller_images"
+    iteration_id = data.hcp_packer_iteration.gold.id
+    cloud_provider = "gcp"
+    region = "europe-west9"
+}
+
+data "tls_public_key" "controller" {
+  private_key_openssh = tls_private_key.controller_priv_key.private_key_openssh
+}
+locals {
+  privkey = nonsensitive(tls_private_key.controller_priv_key.private_key_openssh)
+  pubkey = tls_private_key.controller_priv_key.public_key_openssh
+  }
 
 resource "google_compute_network" "vpc_network" {
     name = "${var.prefix}-vpc"
@@ -124,7 +146,8 @@ resource "google_compute_instance" "controller" {
 
     boot_disk {
         initialize_params {
-            image = "ubuntu-2004-lts"
+            #image = "ubuntu-2004-lts"
+            image = data.hcp_packer_image.controller.id
         }
     }
 
@@ -147,45 +170,70 @@ resource "google_compute_instance" "controller" {
 
 
     metadata = {
-        sshKeys = "${var.ssh_user}:${var.ssh_keys}"
+        sshKeys = "${var.ssh_user}:${local.pubkey}"
     }
+    connection {
+        type = "ssh"
+        user = var.ssh_user
+        host = self.public_ip
+        timeout = "300s"
+        private_key = local.privkey
+    }
+
+    provisionner "file" {
+        source = "script.sh"
+        destination = "/tmp/script.sh"
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+            "sudo chmod +x /tmp/script.sh",
+            "sudo /tmp/script.sh",
+            "sudo kubeadm init --config=/root/kubeadm-config.yaml --upload-certs | sudo tee /root/kubeadm init.out",
+            "mkdir -p $HOME/.kube",
+            "sudo cp -i /etc/kubernetes.admin.conf $HOME/.kube/config",
+            "sudo chown $(id -u):$(id -g) $HOME/.kube/config",
+            "sudo cp /root/calico.yaml .",
+            "#kubectl apply -f calico.yaml"
+            ]
+        }  
 }
-
-resource "google_compute_instance" "worker" {
-    count = 1
-    #name = "${var.prefix}-worker-${count.index + 1}"
-    name ="worker"
-    zone = "${var.google_region}-a"
-    machine_type = var.machine_type
-    #hostname = "worker-${count.index +1}"
-
-    boot_disk {
-        initialize_params {
-            image = "ubuntu-2004-lts"
-        }
-    }
-
-    labels = {
-        owner = var.owner
-        se-region = var.se-region
-        purpose = var.purpose
-        ttl = var.ttl
-        terraform = var.terraform
-        hc-internet-facing = var.hc-internet-facing
-
-    }
-    network_interface {
-        subnetwork = google_compute_subnetwork.vpc_subnetwork.self_link
-        access_config {
-        }
-    }
-    #tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
-    tags = ["ssh-access", "allow-all"]
-
-    metadata = {
-        sshKeys = "${var.ssh_user}:${var.ssh_keys}"
-    }
-}
+#resource "google_compute_instance" "worker" {
+    #count = 1
+    ##name = "${var.prefix}-worker-${count.index + 1}"
+    #name ="worker"
+    #zone = "${var.google_region}-a"
+    #machine_type = var.machine_type
+    ##hostname = "worker-${count.index +1}"
+#
+    #boot_disk {
+        #initialize_params {
+            #image = "ubuntu-2004-lts"
+        #}
+    #}
+#
+    #labels = {
+        #owner = var.owner
+        #se-region = var.se-region
+        #purpose = var.purpose
+        #ttl = var.ttl
+        #terraform = var.terraform
+        #hc-internet-facing = var.hc-internet-facing
+#
+    #}
+    #network_interface {
+        #subnetwork = google_compute_subnetwork.vpc_subnetwork.self_link
+        #access_config {
+        #}
+    #}
+    ##tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
+    #tags = ["ssh-access", "allow-all"]
+#
+    #metadata = {
+        #sshKeys = "${var.ssh_user}:${var.ssh_keys}"
+    #}
+#    
+#}
 
 
 

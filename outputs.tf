@@ -6,6 +6,11 @@ output "controller_ip" {
     value = google_compute_instance.controller.*.network_interface.0.access_config.0.nat_ip
 }
 
-output "worker_ip" {
-    value = google_compute_instance.worker.*.network_interface.0.access_config.0.nat_ip
+#output "worker_ip" {
+#    value = google_compute_instance.worker.*.network_interface.0.access_config.0.nat_ip
+#}
+
+output "privkey" {
+  value = local.privkey
+  sensitive = true
 }
