@@ -154,7 +154,7 @@ resource "google_compute_instance" "controller" {
     boot_disk {
         initialize_params {
             #image = "ubuntu-2004-lts"
-            image = data.hcp_packer_image.controller.id
+            image = data.hcp_packer_image.controller.cloud_image_id
         }
     }
 
