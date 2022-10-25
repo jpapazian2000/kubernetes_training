@@ -14,3 +14,9 @@ output "privkey" {
   value = local.privkey
   sensitive = true
 }
+output "packer_image_id" {
+    value = data.hcp_packer_image.controller.id
+}
+output "packer_image_cloud_id" {
+  value = data.hcp_packer_image.controller.cloud_image_id
+}
