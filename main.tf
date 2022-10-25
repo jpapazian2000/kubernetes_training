@@ -159,7 +159,7 @@ resource "google_compute_instance" "controller" {
     }
 
     labels = {
-        owner = var.owner
+        owner = ${var.owner}-test
         se-region = var.se-region
         purpose = var.purpose
         ttl = var.ttl
@@ -198,7 +198,7 @@ resource "google_compute_instance" "controller" {
             "sudo /tmp/script.sh",
             "sudo kubeadm init --config=/root/kubeadm-config.yaml --upload-certs | sudo tee /root/kubeadm init.out",
             "mkdir -p $HOME/.kube",
-            "sudo cp -i /etc/kubernetes.admin.conf $HOME/.kube/config",
+            "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config",
             "sudo chown $(id -u):$(id -g) $HOME/.kube/config",
             "sudo cp /root/calico.yaml .",
             "#kubectl apply -f calico.yaml"
