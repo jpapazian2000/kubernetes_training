@@ -159,7 +159,7 @@ resource "google_compute_instance" "controller" {
     }
 
     labels = {
-        owner = "${var.owner}-test"
+        owner = "${var.owner}"
         se-region = var.se-region
         purpose = var.purpose
         ttl = var.ttl
