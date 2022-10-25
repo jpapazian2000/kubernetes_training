@@ -195,7 +195,8 @@ resource "google_compute_instance" "controller" {
     provisioner "remote-exec" {
         inline = [
             "sudo chmod +x /tmp/script.sh",
-            "sudo sysctl -p /etc/sysctl.conf",
+            "sudo modprobe br_netfilter",
+            "sudo sysctl --system",
             "sudo /tmp/script.sh",
             "sudo kubeadm init --config=/root/kubeadm-config.yaml --upload-certs | sudo tee /root/kubeadm init.out",
             "mkdir -p $HOME/.kube",
