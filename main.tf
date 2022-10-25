@@ -30,7 +30,7 @@ data "hcp_packer_iteration" "gold" {
 data "hcp_packer_image" "controller" {
     bucket_name = "k8s-controller-images"
     iteration_id = data.hcp_packer_iteration.gold.id
-    cloud_provider = "googlecompute"
+    cloud_provider = "google"
     region = "europe-west9"
 }
 
