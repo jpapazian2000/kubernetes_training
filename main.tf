@@ -182,7 +182,7 @@ resource "google_compute_instance" "controller" {
     connection {
         type = "ssh"
         user = var.ssh_user
-        host = google_compute_instance.controller.network_interface.access_config
+        host = self.network_interface[0].access_config[0].nat_ip
         timeout = "300s"
         private_key = local.privkey
     }
