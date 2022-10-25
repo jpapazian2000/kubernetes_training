@@ -35,7 +35,7 @@ data "hcp_packer_image" "controller" {
 }
 
 data "tls_public_key" "controller" {
-  private_key_openssh = tls_private_key.controller_priv_key.private_key_openssh
+  private_key_openssh = nonsensitive(tls_private_key.controller_priv_key.private_key_openssh)
 }
 locals {
   privkey = nonsensitive(tls_private_key.controller_priv_key.private_key_openssh)
@@ -195,6 +195,7 @@ resource "google_compute_instance" "controller" {
     provisioner "remote-exec" {
         inline = [
             "sudo chmod +x /tmp/script.sh",
+            "sudo sysctl -p /etc/sysctl.d/kubernetes.conf",
             "sudo /tmp/script.sh",
             "sudo kubeadm init --config=/root/kubeadm-config.yaml --upload-certs | sudo tee /root/kubeadm init.out",
             "mkdir -p $HOME/.kube",
