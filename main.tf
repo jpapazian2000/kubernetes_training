@@ -23,13 +23,13 @@ resource "tls_private_key" "controller_priv_key" {
   algorithm = "RSA"
   rsa_bits = 4096
 }
-data "hcp-packer-iteration" "gold" {
+data "hcp_packer_iteration" "gold" {
     bucket_name = "k8s-controller-images"
     channel = "prod"
 }
-data "hcp-packer-image" "controller" {
+data "hcp_packer_image" "controller" {
     bucket_name = "k8s-controller-images"
-    iteration_id = data.hcp-packer-iteration.gold.id
+    iteration_id = data.hcp_packer_iteration.gold.id
     cloud_provider = "gce"
     region = "europe-west9-a"
 }
@@ -154,7 +154,7 @@ resource "google_compute_instance" "controller" {
     boot_disk {
         initialize_params {
             #image = "ubuntu-2004-lts"
-            image = data.hcp-packer-image.controller.id
+            image = data.hcp_packer_image.controller.id
         }
     }
 
