@@ -12,7 +12,7 @@ output "controller_ip" {
 
 output "privkey" {
   value = local.privkey
-  sensitive = true
+  sensitive = false
 }
 output "packer_image_id" {
     value = data.hcp_packer_image.controller.id
