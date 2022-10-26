@@ -144,7 +144,7 @@ resource "google_compute_firewall" "allow_all" {
 }
 
 resource "google_compute_instance" "controller" {
-    count = 1
+    #count = 1
     #name = "${var.prefix}-controller-${count.index + 1}"
     name = "k8scp"
     zone = "${var.google_region}-a"
