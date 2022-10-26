@@ -207,42 +207,57 @@ resource "google_compute_instance" "controller" {
             ]
         }  
 }
-#resource "google_compute_instance" "worker" {
-    #count = 1
-    ##name = "${var.prefix}-worker-${count.index + 1}"
-    #name ="worker"
-    #zone = "${var.google_region}-a"
-    #machine_type = var.machine_type
-    ##hostname = "worker-${count.index +1}"
-#
-    #boot_disk {
-        #initialize_params {
-            #image = "ubuntu-2004-lts"
-        #}
-    #}
-#
-    #labels = {
-        #owner = var.owner
-        #se-region = var.se-region
-        #purpose = var.purpose
-        #ttl = var.ttl
-        #terraform = var.terraform
-        #hc-internet-facing = var.hc-internet-facing
-#
-    #}
-    #network_interface {
-        #subnetwork = google_compute_subnetwork.vpc_subnetwork.self_link
-        #access_config {
-        #}
-    #}
-    ##tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
-    #tags = ["ssh-access", "allow-all"]
-#
-    #metadata = {
-        #sshKeys = "${var.ssh_user}:${var.ssh_keys}"
-    #}
-#    
-#}
+locals {
+    controller_ip = google_compute_instance.controller.network_interface.0.network_ip
+}
+resource "google_compute_instance" "worker" {
+    count = 1
+    #name = "${var.prefix}-worker-${count.index + 1}"
+    name ="worker"
+    zone = "${var.google_region}-a"
+    machine_type = var.machine_type
+    #hostname = "worker-${count.index +1}"
+
+    boot_disk {
+        initialize_params {
+            image = "ubuntu-2004-lts"
+        }
+    }
+
+    labels = {
+        owner = var.owner
+        se-region = var.se-region
+        purpose = var.purpose
+        ttl = var.ttl
+        terraform = var.terraform
+        hc-internet-facing = var.hc-internet-facing
+
+    }
+    network_interface {
+        subnetwork = google_compute_subnetwork.vpc_subnetwork.self_link
+        access_config {
+        }
+    }
+    #tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
+    tags = ["ssh-access", "allow-all"]
+
+    metadata = {
+        sshKeys = "${var.ssh_user}:${local.pubkey}"
+    }
+    connection {
+        type = "ssh"
+        user = var.ssh_user
+        host = self.network_interface[0].access_config[0].nat_ip
+        timeout = "300s"
+        private_key = local.privkey
+    }
+    provisioner "remote-exec" {
+        inline = [
+            "sudo sudo sed -i \"1s/^/${local.controller_ip} k8scp \n/\" /etc/hosts"
+        ]
+      
+    }
+}
 
 
 
