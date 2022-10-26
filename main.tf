@@ -220,7 +220,8 @@ resource "google_compute_instance" "worker" {
 
     boot_disk {
         initialize_params {
-            image = "ubuntu-2004-lts"
+            #image = "ubuntu-2004-lts"
+            image = data.hcp_packer_image.controller.cloud_image_id
         }
     }
 
