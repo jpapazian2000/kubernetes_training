@@ -252,9 +252,14 @@ resource "google_compute_instance" "worker" {
         timeout = "300s"
         private_key = local.privkey
     }
+    provisioner "file" {
+        source = "worker.sh"
+        destination = "/tmp/worker.sh"
+    }
     provisioner "remote-exec" {
         inline = [
-            "sudo sudo sed -i \"1s/^/${local.controller_ip} k8scp \n/\" /etc/hosts"
+            "sudo chmod +x /tmp/worker.sh",
+            "sudo ./worker.sh ${local.controller_ip}"
         ]
       
     }
