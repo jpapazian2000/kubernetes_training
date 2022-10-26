@@ -259,6 +259,8 @@ resource "google_compute_instance" "worker" {
     provisioner "remote-exec" {
         inline = [
             "sudo chmod +x /tmp/worker.sh",
+            "sudo modprobe br_netfilter",
+            "sudo sysctl --system",
             "sudo /tmp/worker.sh ${local.controller_ip}"
         ]
       
