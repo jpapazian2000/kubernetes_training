@@ -211,7 +211,7 @@ locals {
     controller_ip = google_compute_instance.controller.network_interface.0.network_ip
 }
 resource "google_compute_instance" "worker" {
-    count = 1
+    #count = 1
     #name = "${var.prefix}-worker-${count.index + 1}"
     name ="worker"
     zone = "${var.google_region}-a"
