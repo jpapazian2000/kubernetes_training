@@ -179,12 +179,12 @@ resource "google_compute_instance" "controller" {
     metadata = {
         sshKeys = "${var.ssh_user}:${local.pubkey}"
     }
-    lifecycle {
-      postcondition {
-        condition = self.image == data.hcp_packer_image.controller.cloud_image_id
-        error_message = "you don't use the latest available image data.hcp_packer_image.worker.cloud_image_id"
-      }
-    }
+    #lifecycle {
+      #postcondition {
+        #condition = self.image == data.hcp_packer_image.controller.cloud_image_id
+        #error_message = "you don't use the latest available image data.hcp_packer_image.worker.cloud_image_id"
+      #}
+    #}
     connection {
         type = "ssh"
         user = var.ssh_user
@@ -244,12 +244,12 @@ resource "google_compute_instance" "worker" {
     #tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
     tags = ["ssh-access", "allow-all"]
 
-    lifecycle {
-      postcondition {
-        condition = self.image == data.hcp_packer_image.controller.cloud_image_id
-        error_message = "you don't use the latest available image data.hcp_packer_image.controller.cloud_image_id"
-      }
-    }
+    #lifecycle {
+      #postcondition {
+        #condition = self.image == data.hcp_packer_image.controller.cloud_image_id
+        #error_message = "you don't use the latest available image data.hcp_packer_image.controller.cloud_image_id"
+      #}
+    #}
 
     metadata = {
         sshKeys = "${var.ssh_user}:${local.pubkey}"
