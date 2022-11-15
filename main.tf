@@ -179,7 +179,7 @@ resource "google_compute_instance" "controller" {
     metadata = {
         sshKeys = "${var.ssh_user}:${local.pubkey}"
     }
-    lifecyclifecycle {
+    lifecycle {
       postcondition {
         condition = self.image == data.hcp_packer_image.controller.cloud_image_id
       }
@@ -243,7 +243,7 @@ resource "google_compute_instance" "worker" {
     #tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
     tags = ["ssh-access", "allow-all"]
 
-    lifecyclifecycle {
+    lifecycle {
       postcondition {
         condition = self.image == data.hcp_packer_image.worker.cloud_image_id
       }
