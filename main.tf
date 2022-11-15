@@ -195,77 +195,75 @@ resource "google_compute_instance" "controller" {
     provisioner "remote-exec" {
         inline = [
             "sudo chmod +x /tmp/script.sh",
-            "sudo modprobe br_netfilter",
-            "sudo sysctl --system",
             "sudo /tmp/script.sh",
-            "sudo kubeadm init --config=/root/kubeadm-config.yaml --upload-certs | sudo tee /root/kubeadm init.out",
-            "mkdir -p $HOME/.kube",
-            "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config",
-            "sudo chown $(id -u):$(id -g) $HOME/.kube/config",
-            "sudo cp /root/calico.yaml .",
-            "#kubectl apply -f calico.yaml"
+            "sudo mv /root/controller.sh $HOME/controller.sh",
+            "sudo chown $(id -u):$(id -g) controller.sh",
+            "sudo chmod +x controller.sh",
+            "$HOME/controller.sh",
             ]
         }  
 }
-locals {
-    controller_ip = google_compute_instance.controller.network_interface.0.network_ip
-}
-resource "google_compute_instance" "worker" {
-    #count = 1
-    #name = "${var.prefix}-worker-${count.index + 1}"
-    name ="worker"
-    zone = "${var.google_region}-a"
-    machine_type = var.machine_type
-    #hostname = "worker-${count.index +1}"
-
-    boot_disk {
-        initialize_params {
-            #image = "ubuntu-2004-lts"
-            image = data.hcp_packer_image.controller.cloud_image_id
-        }
-    }
-
-    labels = {
-        owner = var.owner
-        se-region = var.se-region
-        purpose = var.purpose
-        ttl = var.ttl
-        terraform = var.terraform
-        hc-internet-facing = var.hc-internet-facing
-
-    }
-    network_interface {
-        subnetwork = google_compute_subnetwork.vpc_subnetwork.self_link
-        access_config {
-        }
-    }
-    #tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
-    tags = ["ssh-access", "allow-all"]
-
-    metadata = {
-        sshKeys = "${var.ssh_user}:${local.pubkey}"
-    }
-    connection {
-        type = "ssh"
-        user = var.ssh_user
-        host = self.network_interface[0].access_config[0].nat_ip
-        timeout = "300s"
-        private_key = local.privkey
-    }
-    provisioner "file" {
-        source = "worker.sh"
-        destination = "/tmp/worker.sh"
-    }
-    provisioner "remote-exec" {
-        inline = [
-            "sudo chmod +x /tmp/worker.sh",
-            "sudo modprobe br_netfilter",
-            "sudo sysctl --system",
-            "sudo /tmp/worker.sh ${local.controller_ip}"
-        ]
-      
-    }
-}
+#locals {
+    #controller_ip = google_compute_instance.controller.network_interface.0.network_ip
+#}
+#resource "google_compute_instance" "worker" {
+    ##count = 1
+    ##name = "${var.prefix}-worker-${count.index + 1}"
+    #name ="worker"
+    #zone = "${var.google_region}-a"
+    #machine_type = var.machine_type
+    ##hostname = "worker-${count.index +1}"
+#
+    #boot_disk {
+        #initialize_params {
+            ##image = "ubuntu-2004-lts"
+            #image = data.hcp_packer_image.controller.cloud_image_id
+        #}
+    #}
+#
+    #labels = {
+        #owner = var.owner
+        #se-region = var.se-region
+        #purpose = var.purpose
+        #ttl = var.ttl
+        #terraform = var.terraform
+        #hc-internet-facing = var.hc-internet-facing
+#
+    #}
+    #network_interface {
+        #subnetwork = google_compute_subnetwork.vpc_subnetwork.self_link
+        #access_config {
+        #}
+    #}
+    ##tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
+    #tags = ["ssh-access", "allow-all"]
+#
+    #metadata = {
+        #sshKeys = "${var.ssh_user}:${local.pubkey}"
+    #}
+    #connection {
+        #type = "ssh"
+        #user = var.ssh_user
+        #host = self.network_interface[0].access_config[0].nat_ip
+        #timeout = "300s"
+        #private_key = local.privkey
+    #}
+    #provisioner "file" {
+        #source = "worker_ip.sh"
+        #destination = "/tmp/worker_ip.sh"
+    #}
+    #provisioner "remote-exec" {
+        #inline = [
+            #sudo chmod +x /tmp/worker_ip.sh,
+            #sudo /tmp/worker_ip.sh ${local.controller_ip},
+            #"sudo mv /root/worker.sh $HOME/worker.sh",
+            #"sudo chown $(id -u):$(id -g) worker.sh",
+            #"sudo chmod +x worker.sh",
+            #"$HOME/worker.sh",
+        #]
+#      
+    #}
+#}
 
 
 
