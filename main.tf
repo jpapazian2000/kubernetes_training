@@ -179,6 +179,11 @@ resource "google_compute_instance" "controller" {
     metadata = {
         sshKeys = "${var.ssh_user}:${local.pubkey}"
     }
+    lifecyclifecycle {
+      postcondition {
+        condition = self.image == data.hcp_packer_image.controller.cloud_image_id
+      }
+    }
     connection {
         type = "ssh"
         user = var.ssh_user
@@ -203,67 +208,73 @@ resource "google_compute_instance" "controller" {
             ]
         }  
 }
-#locals {
-    #controller_ip = google_compute_instance.controller.network_interface.0.network_ip
-#}
-#resource "google_compute_instance" "worker" {
-    ##count = 1
-    ##name = "${var.prefix}-worker-${count.index + 1}"
-    #name ="worker"
-    #zone = "${var.google_region}-a"
-    #machine_type = var.machine_type
-    ##hostname = "worker-${count.index +1}"
-#
-    #boot_disk {
-        #initialize_params {
-            ##image = "ubuntu-2004-lts"
-            #image = data.hcp_packer_image.controller.cloud_image_id
-        #}
-    #}
-#
-    #labels = {
-        #owner = var.owner
-        #se-region = var.se-region
-        #purpose = var.purpose
-        #ttl = var.ttl
-        #terraform = var.terraform
-        #hc-internet-facing = var.hc-internet-facing
-#
-    #}
-    #network_interface {
-        #subnetwork = google_compute_subnetwork.vpc_subnetwork.self_link
-        #access_config {
-        #}
-    #}
-    ##tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
-    #tags = ["ssh-access", "allow-all"]
-#
-    #metadata = {
-        #sshKeys = "${var.ssh_user}:${local.pubkey}"
-    #}
-    #connection {
-        #type = "ssh"
-        #user = var.ssh_user
-        #host = self.network_interface[0].access_config[0].nat_ip
-        #timeout = "300s"
-        #private_key = local.privkey
-    #}
-    #provisioner "file" {
-        #source = "worker_ip.sh"
-        #destination = "/tmp/worker_ip.sh"
-    #}
-    #provisioner "remote-exec" {
-        #inline = [
-            #sudo chmod +x /tmp/worker_ip.sh,
-            #sudo /tmp/worker_ip.sh ${local.controller_ip},
-            #"sudo mv /root/worker.sh $HOME/worker.sh",
-            #"sudo chown $(id -u):$(id -g) worker.sh",
-            #"sudo chmod +x worker.sh",
-            #"$HOME/worker.sh",
-        #]
-#      
-    #}
-#}
+locals {
+    controller_ip = google_compute_instance.controller.network_interface.0.network_ip
+}
+resource "google_compute_instance" "worker" {
+    #count = 1
+    #name = "${var.prefix}-worker-${count.index + 1}"
+    name ="worker"
+    zone = "${var.google_region}-a"
+    machine_type = var.machine_type
+    #hostname = "worker-${count.index +1}"
+
+    boot_disk {
+        initialize_params {
+            #image = "ubuntu-2004-lts"
+            image = data.hcp_packer_image.controller.cloud_image_id
+        }
+    }
+
+    labels = {
+        owner = var.owner
+        se-region = var.se-region
+        purpose = var.purpose
+        ttl = var.ttl
+        terraform = var.terraform
+        hc-internet-facing = var.hc-internet-facing
+    }
+
+    network_interface {
+        subnetwork = google_compute_subnetwork.vpc_subnetwork.self_link
+        access_config {
+        }
+    }
+    #tags = ["controller-access", "https-access", "ssh-access", "api-server-access"]
+    tags = ["ssh-access", "allow-all"]
+
+    lifecyclifecycle {
+      postcondition {
+        condition = self.image == data.hcp_packer_image.worker.cloud_image_id
+      }
+    }
+
+    metadata = {
+        sshKeys = "${var.ssh_user}:${local.pubkey}"
+    }
+    connection {
+        type = "ssh"
+        user = var.ssh_user
+        host = self.network_interface[0].access_config[0].nat_ip
+        timeout = "300s"
+        private_key = local.privkey
+    }
+    provisioner "file" {
+        source = "worker_ip.sh"
+        destination = "/tmp/worker_ip.sh"
+    }
+    provisioner "remote-exec" {
+        inline = [
+            sudo chmod +x /tmp/worker_ip.sh,
+            sudo /tmp/worker_ip.sh ${local.controller_ip},
+            "sudo mv /root/worker.sh $HOME/worker.sh",
+            "sudo chown $(id -u):$(id -g) worker.sh",
+            "sudo chmod +x worker.sh",
+            "$HOME/worker.sh",
+        ]
+      
+    }
+}
 
 
 
