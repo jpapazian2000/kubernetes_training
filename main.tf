@@ -265,8 +265,8 @@ resource "google_compute_instance" "worker" {
     }
     provisioner "remote-exec" {
         inline = [
-            sudo chmod +x /tmp/worker_ip.sh,
-            sudo /tmp/worker_ip.sh ${local.controller_ip},
+            "sudo chmod +x /tmp/worker_ip.sh",
+            "sudo /tmp/worker_ip.sh ${local.controller_ip}",
             "sudo mv /root/worker.sh $HOME/worker.sh",
             "sudo chown $(id -u):$(id -g) worker.sh",
             "sudo chmod +x worker.sh",
