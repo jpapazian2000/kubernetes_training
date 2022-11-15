@@ -182,6 +182,7 @@ resource "google_compute_instance" "controller" {
     lifecycle {
       postcondition {
         condition = self.image == data.hcp_packer_image.controller.cloud_image_id
+        error_message = "you don't use the latest available image ${data.hcp_packer_image.worker.cloud_image_id}"
       }
     }
     connection {
@@ -246,6 +247,7 @@ resource "google_compute_instance" "worker" {
     lifecycle {
       postcondition {
         condition = self.image == data.hcp_packer_image.worker.cloud_image_id
+        error_message = "you don't use the latest available image ${data.hcp_packer_image.worker.cloud_image_id}"
       }
     }
 
