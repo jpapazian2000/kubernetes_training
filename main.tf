@@ -135,7 +135,8 @@ resource "google_compute_firewall" "allow_all" {
   network = google_compute_network.vpc_network.self_link
 
   allow {
-    protocol = "tcp"
+    #protocol = "tcp"
+    protocol = "all"
     #ports = ["6443"]
   }
 
